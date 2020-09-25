@@ -70,7 +70,20 @@ var makeTranslateString = function(x,y)
 var drawAxes = function(graphDim,margins,
                          xScale,yScale)
 {
-   
+   //var xAxis=d3.svg.axis()
+   //.scale(xScale)
+   //.orient("bottom")
+   var xAxis=d3.axisBottom(xScale)
+   d3.select("svg")
+    .append("g")
+    .call(xAxis)
+    .attr("transform", makeTranslateString(margins.left, graphDim.height+margins.top))
+    
+    var yAxis = d3.axisLeft(yScale)
+    d3.select("svg")
+    .append("g")
+    .attr("transform", makeTranslateString(margins.left, margins.top))
+    .call(yAxis)
  
 }
 
@@ -79,7 +92,31 @@ var drawAxes = function(graphDim,margins,
 //margins - objedct that stores the size of the margins
 var drawLabels = function(graphDim,margins)
 {
+    var title = d3.select("svg")
+   
+    title.append("text")
+    .text("Trump Support")
+    .classed("title", true)
+    .attr("text-anchor","middle")
+    .attr("x",margins.left+(graphDim.width/2))
+    .attr("y",margins.top)
     
+    var xLabel = d3.select("svg")
+    
+    xLabel.append("text")
+    .text("Percent White")
+    .classed("label", true)
+    .attr("text-anchor","middle")
+    .attr("x",margins.left+(graphDim.width/2))
+    .attr("y",graphDim.height+margins.top+margins.bottom)
+    
+    var yLabel = d3.select("svg")
+    yLabel.append("text")
+    .attr("transform",makeTranslateString(margins.left/2, margins.top+graphDim.height/2 ) + " rotate(-90)")
+    .text("Percentage Voting for Trump")
+    .classed("label","true")
+    .attr("text-anchor","middle")
+    //.attr("transform", "rotate(-90)")
 }
 
 
@@ -98,7 +135,39 @@ var drawLegend = function(graphDim,margins)
        }
     ]
 
+var legend = d3.select("svg")
+    .append("g")
+    .classed("legend",true)
+    .attr("transform", makeTranslateString(90,70) )
 
+var entries = legend.selectAll("g")
+        .data(categories.map(function(category)
+                            {
+            return category.name
+        }))
+        .enter()
+        .append("g")
+        .classed("legendEntry",true)
+        .attr("fill", function(category)
+              { 
+            if(category == "Less College")
+                {return "red"}
+            if(category == "High unemployment")
+                {return "blue"}
+        })
+        .attr("transform",function(categories,index)
+              {
+                return "translate(0,"+index*20+")";
+              })
+              
+        entries.append("rect")
+                .attr("width",10)
+                .attr("height",10)
+    
+        entries.append("text")
+                .text(function(name){return name})
+                .attr("x",15)
+                .attr("y",10)
     
     
     
@@ -110,7 +179,7 @@ var initGraph = function(counties)
     //size of screen
     var screen = {width:800,height:600}
     //how much space on each side
-    var margins = {left:30,right:20,top:20,bottom:30}
+    var margins = {left:70,right:20,top:50,bottom:30}
     
     
     
